@@ -9,121 +9,97 @@ function Dashboard() {
     if (!token) navigate("/");
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-blue-800 text-white px-6 py-4 flex justify-between items-center shadow-md">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">P</span>
-          <span className="text-xl font-bold">ParkVision</span>
+    <div className="dashboard-page">
+      <div className="dashboard-hero mb-8 rounded-3xl p-10 bg-gradient-to-r from-blue-700 to-indigo-600 text-white shadow-xl">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-5">
+          <div>
+            <p className="uppercase tracking-[0.3em] text-sm opacity-80">ParkVision</p>
+            <h1 className="text-4xl md:text-5xl font-bold mt-4">Welcome back!</h1>
+            <p className="mt-4 text-lg text-blue-100">Where would you like to park today?</p>
+          </div>
+          <button onClick={() => navigate("/book")} className="mt-2 md:mt-0 inline-flex items-center justify-center rounded-full bg-white text-blue-700 font-semibold px-6 py-3 shadow-lg hover:bg-gray-100 transition">
+            Refresh Parking Data
+          </button>
         </div>
-        <button
-          onClick={handleLogout}
-          className="bg-white text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-        >
-          Logout
-        </button>
-      </nav>
-
-      <div className="px-6 py-8">
-        <h2 className="text-2xl font-bold text-gray-800">Welcome back!</h2>
-        <p className="text-gray-500 mt-1">Where would you like to park today?</p>
       </div>
 
-      <div className="px-6 grid grid-cols-2 gap-4 md:grid-cols-5">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-10">
         <div
           onClick={() => navigate("/book")}
-          className="bg-blue-700 text-white rounded-xl p-5 flex flex-col items-center gap-2 cursor-pointer hover:bg-blue-800 transition shadow"
+          className="bg-blue-700 text-white rounded-3xl p-8 flex flex-col items-center gap-4 cursor-pointer hover:bg-blue-800 transition shadow-xl"
         >
-          <span className="text-3xl">🚗</span>
-          <span className="font-semibold text-sm">Book a Slot</span>
+          <span className="text-4xl">🚗</span>
+          <span className="font-semibold text-lg">Book a Slot</span>
         </div>
 
         <div
           onClick={() => navigate("/my-bookings")}
-          className="bg-white text-gray-800 rounded-xl p-5 flex flex-col items-center gap-2 cursor-pointer hover:bg-gray-50 transition shadow"
+          className="bg-white text-gray-900 rounded-3xl p-8 flex flex-col items-center gap-4 cursor-pointer hover:shadow-lg transition border border-gray-200"
         >
-          <span className="text-3xl">📋</span>
-          <span className="font-semibold text-sm">My Bookings</span>
+          <span className="text-4xl">📋</span>
+          <span className="font-semibold text-lg">My Bookings</span>
         </div>
 
         <div
           onClick={() => navigate("/navigate")}
-          className="bg-white text-gray-800 rounded-xl p-5 flex flex-col items-center gap-2 cursor-pointer hover:bg-gray-50 transition shadow"
+          className="bg-white text-gray-900 rounded-3xl p-8 flex flex-col items-center gap-4 cursor-pointer hover:shadow-lg transition border border-gray-200"
         >
-          <span className="text-3xl">🧭</span>
-          <span className="font-semibold text-sm">Navigate</span>
+          <span className="text-4xl">🧭</span>
+          <span className="font-semibold text-lg">Navigate</span>
         </div>
 
         <div
           onClick={() => navigate("/profile")}
-          className="bg-white text-gray-800 rounded-xl p-5 flex flex-col items-center gap-2 cursor-pointer hover:bg-gray-50 transition shadow"
+          className="bg-white text-gray-900 rounded-3xl p-8 flex flex-col items-center gap-4 cursor-pointer hover:shadow-lg transition border border-gray-200"
         >
-          <span className="text-3xl">👤</span>
-          <span className="font-semibold text-sm">Profile</span>
+          <span className="text-4xl">👤</span>
+          <span className="font-semibold text-lg">Profile</span>
         </div>
 
         <div
           onClick={() => navigate("/admin")}
-          className="bg-yellow-400 text-yellow-900 rounded-xl p-5 flex flex-col items-center gap-2 cursor-pointer hover:bg-yellow-500 transition shadow"
+          className="bg-yellow-400 text-yellow-950 rounded-3xl p-8 flex flex-col items-center gap-4 cursor-pointer hover:bg-yellow-500 transition shadow-xl"
         >
-          <span className="text-3xl">📸</span>
-          <span className="font-semibold text-sm">Admin Panel</span>
+          <span className="text-4xl">📸</span>
+          <span className="font-semibold text-lg">Admin Panel</span>
         </div>
       </div>
 
-      <div className="px-6 mt-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Nearby Parking Areas</h3>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Nearby Parking Areas</h2>
+        <p className="text-sm text-gray-500">Automatically updated from admin panel detection results.</p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl shadow p-5">
-            <h4 className="font-semibold text-gray-800">City Center Parking</h4>
-            <p className="text-gray-500 text-sm mt-1">MG Road, Indore</p>
-            <div className="flex gap-2 mt-3">
-              <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">8 Free</span>
-              <span className="bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">4 Occupied</span>
-            </div>
-            <button
-              onClick={() => navigate("/book")}
-              className="mt-4 w-full bg-blue-700 text-white text-sm py-2 rounded-lg hover:bg-blue-800 transition"
-            >
-              Book Now
-            </button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
+          <h3 className="font-semibold text-gray-900">Mall Parking</h3>
+          <p className="text-sm text-gray-500 mt-1">Vijay Nagar, Indore</p>
+          <div className="mt-4 flex gap-3">
+            <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1">3 Free</span>
+            <span className="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-xs font-semibold px-3 py-1">5 Occupied</span>
           </div>
+          <button onClick={() => navigate("/book")} className="mt-6 w-full rounded-full bg-blue-700 text-white py-3 font-semibold hover:bg-blue-800 transition">Book Now</button>
+        </div>
 
-          <div className="bg-white rounded-xl shadow p-5">
-            <h4 className="font-semibold text-gray-800">Mall Parking</h4>
-            <p className="text-gray-500 text-sm mt-1">Vijay Nagar, Indore</p>
-            <div className="flex gap-2 mt-3">
-              <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">3 Free</span>
-              <span className="bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">9 Occupied</span>
-            </div>
-            <button
-              onClick={() => navigate("/book")}
-              className="mt-4 w-full bg-blue-700 text-white text-sm py-2 rounded-lg hover:bg-blue-800 transition"
-            >
-              Book Now
-            </button>
+        <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
+          <h3 className="font-semibold text-gray-900">Railway Station Parking</h3>
+          <p className="text-sm text-gray-500 mt-1">Station Road, Indore</p>
+          <div className="mt-4 flex gap-3">
+            <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1">6 Free</span>
+            <span className="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-xs font-semibold px-3 py-1">2 Occupied</span>
           </div>
+          <button onClick={() => navigate("/book")} className="mt-6 w-full rounded-full bg-blue-700 text-white py-3 font-semibold hover:bg-blue-800 transition">Book Now</button>
+        </div>
 
-          <div className="bg-white rounded-xl shadow p-5">
-            <h4 className="font-semibold text-gray-800">Railway Station Parking</h4>
-            <p className="text-gray-500 text-sm mt-1">Station Road, Indore</p>
-            <div className="flex gap-2 mt-3">
-              <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">12 Free</span>
-              <span className="bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">6 Occupied</span>
-            </div>
-            <button
-              onClick={() => navigate("/book")}
-              className="mt-4 w-full bg-blue-700 text-white text-sm py-2 rounded-lg hover:bg-blue-800 transition"
-            >
-              Book Now
-            </button>
+        <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
+          <h3 className="font-semibold text-gray-900">City Center Parking</h3>
+          <p className="text-sm text-gray-500 mt-1">MG Road, Indore</p>
+          <div className="mt-4 flex gap-3">
+            <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1">5 Free</span>
+            <span className="inline-flex items-center rounded-full bg-rose-100 text-rose-700 text-xs font-semibold px-3 py-1">3 Occupied</span>
           </div>
+          <button onClick={() => navigate("/book")} className="mt-6 w-full rounded-full bg-blue-700 text-white py-3 font-semibold hover:bg-blue-800 transition">Book Now</button>
         </div>
       </div>
     </div>

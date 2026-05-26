@@ -250,6 +250,63 @@ textarea {
   min-height: 100px;
 }
 
+.secondary-btn {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+  padding: 0.85rem 1.15rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.page-header {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.page-header h1 {
+  margin: 0.5rem 0 0;
+}
+
+.profile-page,
+.about-page,
+.contact-page,
+.dashboard-page {
+  padding: 2rem 1rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-page .form-group,
+.contact-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.profile-page .form-group label,
+.contact-form .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.profile-page .form-group input,
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+  color: var(--text-color);
+}
+
 /* Login and Signup pages */
 .login-container,
 .signup-container {
@@ -393,6 +450,15 @@ textarea {
 
 .contact-form {
   padding: 2rem;
+}
+
+.feature-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
 }
 
 .contact input,

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AdminPanel() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ function AdminPanel() {
   const [message, setMessage] = useState("");
   const [gridRows, setGridRows] = useState(2);
   const [gridCols, setGridCols] = useState(4);
+  const autoDetect = false;
+  const stats = { totalUsers: 0 };
 
   // Add new area form
   const [showAddForm, setShowAddForm] = useState(false);
@@ -23,7 +26,7 @@ function AdminPanel() {
 
   const fetchAreas = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/slots");
+      const res = await fetch("/api/slots");
       const data = await res.json();
       setAreas(data);
     } catch (err) {
@@ -53,23 +56,24 @@ function AdminPanel() {
     setMessage("");
     setDetectedSlots([]);
     try {
-      const res = await fetch(`http://localhost:5000/api/slots/detect/${selectedArea.areaId}`, {
+      const res = await fetch(`/api/slots/detect/${selectedArea.areaId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({
-  image: imageBase64,
-  rows: gridRows,
-  cols: gridCols,
-}),
+        body: JSON.stringify({
+          image: imageBase64,
+          rows: gridRows,
+          cols: gridCols,
+        }),
+      });
       const data = await res.json();
       if (data.area) {
-  setDetectedSlots(data.area.slots);
-  setCarsDetected(data.carsDetected || 0);
-  if (data.detected_rows) setGridRows(data.detected_rows);
-  if (data.detected_cols) setGridCols(data.detected_cols);
-  setMessage(`Detection complete! ${data.carsDetected || 0} cars detected.${autoDetect ? ` Auto grid: ${data.detected_rows}x${data.detected_cols}` : ''}`);
-  fetchAreas();
-}else {
+        setDetectedSlots(data.area.slots);
+        setCarsDetected(data.carsDetected || 0);
+        if (data.detected_rows) setGridRows(data.detected_rows);
+        if (data.detected_cols) setGridCols(data.detected_cols);
+        setMessage(`Detection complete! ${data.carsDetected || 0} cars detected.${autoDetect ? ` Auto grid: ${data.detected_rows}x${data.detected_cols}` : ''}`);
+        fetchAreas();
+      } else {
         setMessage("Detection failed: " + (data.message || "Unknown error"));
       }
     } catch (err) {
@@ -108,7 +112,7 @@ function AdminPanel() {
     try {
       const slots = generateSlots(newAreaSlotCount);
       const newAreaId = areas.length > 0 ? Math.max(...areas.map(a => a.areaId)) + 1 : 1;
-      const res = await fetch("http://localhost:5000/api/slots/add", {
+      const res = await fetch("/api/slots/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ areaId: newAreaId, areaName: newAreaName, location: newAreaLocation, slots }),
@@ -133,7 +137,7 @@ function AdminPanel() {
     const confirmed = window.confirm("Delete this parking area?");
     if (!confirmed) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/slots/${areaId}`, { method: "DELETE" });
+      const res = await fetch(`/api/slots/${areaId}`, { method: "DELETE" });
       const data = await res.json();
       if (data.message === "Area deleted") {
         setMessage("Area deleted successfully");
@@ -161,7 +165,7 @@ function AdminPanel() {
         <button onClick={() => navigate("/dashboard")} className="bg-white text-blue-900 font-semibold px-4 py-2 rounded-lg hover:bg-gray-100 transition">
           Back
         </button>
-      </nav>
+      </div>
 
       <div className="px-6 py-8 max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Admin Panel</h2>
@@ -229,34 +233,30 @@ function AdminPanel() {
               <h3 className="font-semibold text-gray-800 mb-4">Upload Image — {selectedArea.areaName}</h3>
               <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
               {image && <img src={image} alt="Uploaded" className="mt-4 w-full max-h-64 object-cover rounded-lg" />}
+
+              {/* Manual grid controls - only show when Auto is OFF */}
+              {!autoDetect && (
+                <div className="flex gap-6 items-end mt-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rows</label>
+                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                      <button onClick={() => setGridRows(Math.max(1, gridRows - 1))} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">−</button>
+                      <span className="px-4 py-2 text-sm font-semibold">{gridRows}</span>
+                      <button onClick={() => setGridRows(gridRows + 1)} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">+</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Columns</label>
+                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                      <button onClick={() => setGridCols(Math.max(1, gridCols - 1))} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">−</button>
+                      <span className="px-4 py-2 text-sm font-semibold">{gridCols}</span>
+                      <button onClick={() => setGridCols(gridCols + 1)} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">+</button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 pb-2">Total slots: <span className="font-bold text-blue-700">{gridRows * gridCols}</span></p>
+                </div>
+              )}
             </div>
-
-   
-
-     {/* Manual grid controls - only show when Auto is OFF */}
-      {!autoDetect && (
-    <div className="flex gap-6 items-end mt-2">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Rows</label>
-        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-          <button onClick={() => setGridRows(Math.max(1, gridRows - 1))} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">−</button>
-          <span className="px-4 py-2 text-sm font-semibold">{gridRows}</span>
-          <button onClick={() => setGridRows(gridRows + 1)} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">+</button>
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Columns</label>
-        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-          <button onClick={() => setGridCols(Math.max(1, gridCols - 1))} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">−</button>
-          <span className="px-4 py-2 text-sm font-semibold">{gridCols}</span>
-          <button onClick={() => setGridCols(gridCols + 1)} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">+</button>
-        </div>
-      </div>
-      <p className="text-sm text-gray-500 pb-2">Total slots: <span className="font-bold text-blue-700">{gridRows * gridCols}</span></p>
-    </div>
-  )}
-</div>
-
 
             <button onClick={handleDetect} disabled={loading} className="w-full bg-blue-700 text-white font-semibold py-3 rounded-xl hover:bg-blue-800 transition mb-6 disabled:opacity-50">
               {loading ? "Detecting with YOLOv8 AI..." : "Detect Slots with YOLOv8 AI"}
@@ -282,10 +282,8 @@ function AdminPanel() {
                   <p className="text-xs capitalize">{slot.status}</p>
                 </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </div>
+          </div>          )}      </div>
     </div>
   );
 }
