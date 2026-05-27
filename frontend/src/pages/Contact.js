@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
+const darkMode = localStorage.getItem("darkMode") === "true";
+const pageBg = darkMode
+  ? "bg-slate-950 text-white"
+  : "bg-gray-100 text-gray-900";
 
+const cardBg = darkMode
+  ? "bg-slate-900 border border-slate-800 text-white"
+  : "bg-white text-gray-900";
+
+const mutedText = darkMode ? "text-slate-300" : "text-gray-500";
 function Contact() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

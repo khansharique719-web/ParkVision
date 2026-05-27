@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -17,42 +16,36 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("darkMode") === "true"
+  );
 
   useEffect(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      setDarkMode(JSON.parse(savedMode));
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    localStorage.setItem('darkMode', JSON.stringify(!darkMode));
-  };
-
-  React.useEffect(() => {
-    document.body.className = darkMode ? 'dark' : 'light';
+    localStorage.setItem("darkMode", darkMode ? "true" : "false");
+    document.body.className = darkMode ? "dark" : "light";
   }, [darkMode]);
+
+  const themeProps = {
+    darkMode,
+    toggleDarkMode: () => setDarkMode((value) => !value),
+  };
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route element={<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/book" element={<BookSlot />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/navigate" element={<NavigatePage />} />
-          <Route path="/find-parking" element={<FindParking />} />
-          <Route path="/payment-history" element={<PaymentHistory />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/reservations" element={<Reservations />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-        </Route>
+        <Route path="/dashboard" element={<Dashboard {...themeProps} />} />
+        <Route path="/admin" element={<AdminPanel {...themeProps} />} />
+        <Route path="/book" element={<BookSlot {...themeProps} />} />
+        <Route path="/my-bookings" element={<MyBookings {...themeProps} />} />
+        <Route path="/navigate" element={<NavigatePage {...themeProps} />} />
+        <Route path="/find-parking" element={<FindParking {...themeProps} />} />
+        <Route path="/payment-history" element={<PaymentHistory {...themeProps} />} />
+        <Route path="/profile" element={<Profile {...themeProps} />} />
+        <Route path="/reservations" element={<Reservations {...themeProps} />} />
+        <Route path="/about" element={<About {...themeProps} />} />
+        <Route path="/contact" element={<Contact {...themeProps} />} />
       </Routes>
     </Router>
   );

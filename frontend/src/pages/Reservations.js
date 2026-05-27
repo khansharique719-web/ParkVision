@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
+const darkMode = localStorage.getItem("darkMode") === "true";
+const pageBg = darkMode
+  ? "bg-slate-950 text-white"
+  : "bg-gray-100 text-gray-900";
 
+const cardBg = darkMode
+  ? "bg-slate-900 border border-slate-800 text-white"
+  : "bg-white text-gray-900";
+
+const mutedText = darkMode ? "text-slate-300" : "text-gray-500";
 function Reservations() {
   const [reservations] = useState([
     { id: 1, location: 'Downtown Parking Lot', date: '2026-04-30', time: '09:00 AM - 05:00 PM', status: 'Active', price: '$40' },

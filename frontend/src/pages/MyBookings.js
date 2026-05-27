@@ -1,21 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const darkMode = localStorage.getItem("darkMode") === "true";
+const pageBg = darkMode
+  ? "bg-slate-950 text-white"
+  : "bg-gray-100 text-gray-900";
 
+const cardBg = darkMode
+  ? "bg-slate-900 border border-slate-800 text-white"
+  : "bg-white text-gray-900";
+
+const mutedText = darkMode ? "text-slate-300" : "text-gray-500";
 function MyBookings() {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchBookings = async () => {
-    const token = localStorage.getItem("token");
+  const fetchBookings = () => {
     try {
-      const res = await fetch("http://localhost:5000/api/bookings/my", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setBookings(data);
-    } catch (err) {
-      alert("Failed to load bookings");
+      const savedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+      setBookings(savedBookings);
+    } catch {
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -25,30 +30,29 @@ function MyBookings() {
     fetchBookings();
   }, []);
 
-  const handleCancel = async (id) => {
-    const confirmed = window.confirm("Cancel this booking? Your payment will be refunded.");
+  const handleCancel = (id) => {
+    const confirmed = window.confirm(
+      "Cancel this booking? Your payment will be refunded."
+    );
+
     if (!confirmed) return;
 
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`http://localhost:5000/api/bookings/cancel/${id}`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (data.message === "Booking cancelled") {
-        alert("Booking cancelled! Refund in 3-5 business days.");
-        fetchBookings();
-      }
-    } catch (err) {
-      alert("Server error");
-    }
+    const savedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+
+    const updatedBookings = savedBookings.map((booking) =>
+      booking._id === id ? { ...booking, status: "cancelled" } : booking
+    );
+
+    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+    alert("Booking cancelled! Refund in 3-5 business days.");
+    fetchBookings();
   };
 
   const statusStyle = (status) => {
     if (status === "active") return "bg-green-100 text-green-700";
     if (status === "completed") return "bg-gray-100 text-gray-600";
     if (status === "cancelled") return "bg-red-100 text-red-600";
+    return "bg-gray-100 text-gray-600";
   };
 
   return (
@@ -85,10 +89,19 @@ function MyBookings() {
               <div key={booking._id} className="bg-white rounded-xl shadow p-5">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-semibold text-gray-800">{booking.area}</h4>
-                    <p className="text-sm text-gray-500">{booking.location}</p>
+                    <h4 className="font-semibold text-gray-800">
+                      {booking.area}
+                    </h4>
+                    <p className="text-sm text-gray-500">
+                      {booking.location}
+                    </p>
                   </div>
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusStyle(booking.status)}`}>
+
+                  <span
+                    className={`text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusStyle(
+                      booking.status
+                    )}`}
+                  >
                     {booking.status}
                   </span>
                 </div>
@@ -98,14 +111,17 @@ function MyBookings() {
                     <p className="text-xs text-gray-400">Slot</p>
                     <p className="font-medium">{booking.slot}</p>
                   </div>
+
                   <div>
                     <p className="text-xs text-gray-400">Date</p>
                     <p className="font-medium">{booking.date}</p>
                   </div>
+
                   <div>
                     <p className="text-xs text-gray-400">Time</p>
                     <p className="font-medium">{booking.time}</p>
                   </div>
+
                   <div>
                     <p className="text-xs text-gray-400">Duration</p>
                     <p className="font-medium">{booking.duration} hr(s)</p>
@@ -113,7 +129,10 @@ function MyBookings() {
                 </div>
 
                 <div className="flex justify-between items-center mt-4">
-                  <p className="font-bold text-blue-700">&#8377;{booking.amount}</p>
+                  <p className="font-bold text-blue-700">
+                    &#8377;{booking.amount}
+                  </p>
+
                   {booking.status === "active" && (
                     <button
                       onClick={() => handleCancel(booking._id)}
